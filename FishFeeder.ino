@@ -16,13 +16,13 @@
 #include <RtcDS3231.h>
 
 /* Define for the Fishfeeder */
-U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ 11);
-
+U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, DISPLAY_RESET);
 
 RtcDS3231<TwoWire> Rtc(Wire);
 
 #define ehajo_width 64
 #define ehajo_height 64
+
 static const unsigned char ehajo_bits[] U8X8_PROGMEM= {
    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -70,6 +70,7 @@ static const unsigned char ehajo_bits[] U8X8_PROGMEM= {
 
 #define ehajo_bw_width 128
 #define ehajo_bw_height 27
+
 static const unsigned char ehajo_bw_bits[] U8X8_PROGMEM= {
    0x00, 0x00, 0x00, 0xe0, 0x3f, 0xf8, 0x1f, 0x00, 0x00, 0x00, 0x00, 0xfc,
    0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf0, 0x7f, 0xfc, 0x1f, 0x00,
@@ -111,25 +112,6 @@ static const unsigned char ehajo_bw_bits[] U8X8_PROGMEM= {
 void u8g2_bitmap_overlay(uint8_t a);
 void u8g2_ascii_1( void );
 
-#define ENC_BUTTON 11
-#define ENC_A 23
-#define ENC_B 22
-
-#define MOTOR1_1 8
-#define MOTOR1_2 12
-#define MOTOR1_3 6
-#define MOTOR1_4 4
-
-#define MOTOR2_1 5
-#define MOTOR2_2 18
-#define MOTOR2_3 13
-#define MOTOR2_4 19
-
-#define LED_SKIP 9
-#define LED_PWM 10
-
-#define ONE_WIRE_BUS 1
-
 OneWire oneWire(ONE_WIRE_BUS);
 //DallasTemperature sensors(&oneWire);
 
@@ -140,6 +122,7 @@ RotaryEncoder encoder(ENC_A, ENC_B);
 //Stepper FishStepperA(stepsPerRevolution, MOTOR2_1, MOTOR2_2, MOTOR2_3, MOTOR2_4);
 
 void setup() {
+  pinMode(ENC_BUTTON, INPUT);
   Rtc.Begin();
   u8g2.begin(); 
   u8g2.setFont(u8g2_font_6x10_tf);
@@ -148,9 +131,9 @@ void setup() {
   u8g2.setFontPosTop();
   u8g2.setFontDirection(0); 
   u8g2.firstPage();  
-  do {
+  /*do {
      u8g2_bitmap_overlay(0);
-  } while( u8g2.nextPage() );
+  } while( u8g2.nextPage() );*/
   pinMode(ENC_A, INPUT_PULLUP); 
   pinMode(ENC_B, INPUT_PULLUP);
   pinMode(ENC_BUTTON, INPUT_PULLUP);
@@ -165,6 +148,8 @@ void setup() {
 void loop() {
   static int pos = 0;
   static int oldpos=0;
+
+  while(digitalRead(ENC_BUTTON)==1);
 
   RtcDateTime now = Rtc.GetDateTime();
   char datestring[15];
