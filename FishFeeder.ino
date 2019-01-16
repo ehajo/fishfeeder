@@ -115,11 +115,11 @@ void u8g2_ascii_1( void );
 OneWire oneWire(ONE_WIRE_BUS);
 //DallasTemperature sensors(&oneWire);
 
-const int stepsPerRevolution = 2048;
+const int stepsPerRevolution = 4096;
 
 RotaryEncoder encoder(ENC_A, ENC_B);
-//Stepper FishStepperB(stepsPerRevolution, MOTOR1_1, MOTOR1_2, MOTOR1_3, MOTOR1_4);
-//Stepper FishStepperA(stepsPerRevolution, MOTOR2_1, MOTOR2_2, MOTOR2_3, MOTOR2_4);
+Stepper FishStepperB(stepsPerRevolution, MOTOR1_1, MOTOR1_3, MOTOR1_2, MOTOR1_4);
+Stepper FishStepperA(stepsPerRevolution, MOTOR2_1, MOTOR2_3, MOTOR2_2, MOTOR2_4);
 
 void setup() {
   pinMode(ENC_BUTTON, INPUT);
@@ -131,25 +131,26 @@ void setup() {
   u8g2.setFontPosTop();
   u8g2.setFontDirection(0); 
   u8g2.firstPage();  
-  /*do {
+  do {
      u8g2_bitmap_overlay(0);
-  } while( u8g2.nextPage() );*/
+     u8g2.setFont(u8g2_font_ncenB10_tr);
+     u8g2.drawStr(10,40,"www.eHaJo.de");
+  } while( u8g2.nextPage() );
   pinMode(ENC_A, INPUT_PULLUP); 
   pinMode(ENC_B, INPUT_PULLUP);
   pinMode(ENC_BUTTON, INPUT_PULLUP);
   //sensors.begin();
 
+  FishStepperA.setSpeed(6);
+  FishStepperB.setSpeed(6);
   pinMode(LED_SKIP, OUTPUT);
   pinMode(LED_PWM, OUTPUT);
   digitalWrite(LED_SKIP, 0);
   digitalWrite(LED_PWM, 1);
+  delay(1000);
 }
 
 void loop() {
-  static int pos = 0;
-  static int oldpos=0;
-
-  while(digitalRead(ENC_BUTTON)==1);
 
   RtcDateTime now = Rtc.GetDateTime();
   char datestring[15];
@@ -173,7 +174,8 @@ void loop() {
     u8g2.drawStr(0,24,datestring);
     u8g2.drawStr(0,40,timestring);
   } while ( u8g2.nextPage() );
-delay(1000);
+  //FishStepperA.step(stepsPerRevolution);
+delay(100);
 }
 
 
@@ -190,9 +192,6 @@ void u8g2_ascii_1() {
 }
 
 void u8g2_bitmap_overlay(uint8_t a) {
-  uint8_t frame_size = 28;
- 
-  //u8g2.drawStr(0, 0, "insert fish here");
   
   u8g2.setBitmapMode(true /* solid */);
   u8g2.drawXBMP(a,0 , ehajo_bw_width, ehajo_bw_height, ehajo_bw_bits);
