@@ -1,0 +1,10 @@
+Configuration Text files:
+
+FEED.TXT:
+Text file for time to feed da fish.
+Format: 
+HHMM # turns turnback
+HHMM: Time to feed da fish
+#: Which stepper (1 or 2)
+turns: 1/8 turn, for example: for two turns: 16
+turnback: 1/8 turn backfeed

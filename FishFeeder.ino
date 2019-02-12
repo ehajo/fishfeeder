@@ -69,6 +69,7 @@ OneWire oneWire(ONE_WIRE_BUS);
 //DallasTemperature sensors(&oneWire);
 
 const int stepsPerRevolution = 4096;
+const int quarterRevolution = stepsPerRevolution / 4;
 
 RotaryEncoder encoder(ENC_A, ENC_B);
 Stepper FishStepperB(stepsPerRevolution, MOTOR1_1, MOTOR1_3, MOTOR1_2, MOTOR1_4);
@@ -102,11 +103,13 @@ void setup() {
   digitalWrite(LED_SKIP, 0);
   digitalWrite(LED_PWM, 1);
   delay(1000);
-  if(SetDateStuff()==1)
+  /*if(SetDateStuff()==1)
     Serial.print("Date and time set.\n");
   else
-    Serial.print("Error setting date and tim.\n");
+    Serial.print("Error setting date and time.\n");
+  */
   
+  FishStepperA.step(stepsPerRevolution);
 }
 
 void loop() {
@@ -133,7 +136,6 @@ void loop() {
     u8g2.drawStr(0,24,datestring);
     u8g2.drawStr(0,40,timestring);
   } while ( u8g2.nextPage() );
-  //FishStepperA.step(stepsPerRevolution);
 delay(100);
 }
 
@@ -172,7 +174,7 @@ int SetDateStuff()
   byte Temp1, Temp2;
   char InString[15];
 
-  Serial.print("Please enter Date/Time as YYMMDDHHMMSSx\n");
+  Serial.print("Please enter Date/Time as YYMMDDhhmmssx\n");
 
   byte j=0;
   while (!GotString) {
