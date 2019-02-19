@@ -14,6 +14,7 @@
 #include <Wire.h> // must be included here so that Arduino library object file references work
 //#include <DallasTemperature.h>
 #include <RtcDS3231.h>
+#include <TimerOne.h>
 
 /* Define for the Fishfeeder */
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, DISPLAY_RESET);
@@ -108,34 +109,17 @@ void setup() {
   else
     Serial.print("Error setting date and time.\n");
   */
+  Timer1.initialize(1000000);
+  Timer1.attachInterrupt(doStuff); // do stuff every 200ms
+
+
   
-  FishStepperA.step(stepsPerRevolution);
+  interrupts();
 }
 
 void loop() {
 
-  RtcDateTime now = Rtc.GetDateTime();
-  char datestring[15];
-  char timestring[15];
 
-  snprintf_P(datestring, 
-          15,
-          PSTR("%02u.%02u.%04u"),
-          now.Day(),
-          now.Month(),
-          now.Year() );
-  snprintf_P(timestring, 
-          15,
-          PSTR("%02u:%02u:%02u"),
-          now.Hour(),
-          now.Minute(),
-          now.Second() );          
-  u8g2.firstPage();
-  do {
-    u8g2.setFont(u8g2_font_ncenB10_tr);
-    u8g2.drawStr(0,24,datestring);
-    u8g2.drawStr(0,40,timestring);
-  } while ( u8g2.nextPage() );
 delay(100);
 }
 
@@ -220,5 +204,30 @@ int SetDateStuff()
   return 1;
 }
 
+// timer interrupt stuff every 200ms:
+void doStuff(void)
+{
+  RtcDateTime now = Rtc.GetDateTime();
+  char datestring[15];
+  char timestring[15];
 
+  snprintf_P(datestring, 
+          15,
+          PSTR("%02u.%02u.%04u"),
+          now.Day(),
+          now.Month(),
+          now.Year() );
+  snprintf_P(timestring, 
+          15,
+          PSTR("%02u:%02u:%02u"),
+          now.Hour(),
+          now.Minute(),
+          now.Second() );          
+  u8g2.firstPage();
+  do {
+    u8g2.setFont(u8g2_font_ncenB10_tr);
+    u8g2.drawStr(0,24,datestring);
+    u8g2.drawStr(0,40,timestring);
+  } while ( u8g2.nextPage() );
+}
 

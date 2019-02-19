@@ -8,3 +8,10 @@ HHMM: Time to feed da fish
 #: Which stepper (1 or 2)
 turns: 1/8 turn, for example: for two turns: 16
 turnback: 1/8 turn backfeed
+
+LIGHT.TXT:
+Text file for time to turn on/off light.
+Format:
+HHMM 0-255
+HHMM: Time to change light
+0-255: light intensity (0 = dark, 255 = max)
